@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#FF6B9D">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="像素角色">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="创建可爱的像素风格角色，支持动画和动态壁纸导出">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>像素角色生成器</title>
+<!-- saved from url=(0214)file:///E:/AI%E6%B5%8F%E8%A7%88%E5%99%A8/WorkBuddy/%E7%BC%96%E7%A8%8B%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/OPENCODE/%E5%83%8F%E7%B4%A0%E9%A3%8E%E6%A0%BC%E5%8A%A8%E6%80%81%E6%8F%92%E7%94%BB/pixel-generator/index.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素角色生成器 - Mathieu Labrecque 风格</title>
   <script src="./像素角色生成器 - Mathieu Labrecque 风格_files/gif.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/upng-js@0.1.1/UPNG.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -1136,29 +1128,32 @@
       .sidebar { width: 280px; }
     }
 
-    @media (max-width: 768px) {
-      /* ============ 移动端全屏设计 ============ */
+    /* ============ iPhone 专用适配 ============ */
+    @supports (padding-top: env(safe-area-inset-top)) {
+      .app {
+        padding-top: env(safe-area-inset-top);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+    }
+    
+    @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+      /* ============ iPhone 专属设计 ============ */
       
-      /* Show mobile elements */
-      .bottom-toolbar { display: block !important; }
-      .mobile-header-actions { display: flex !important; }
+      /* 隐藏桌面端元素 */
+      .sidebar, .canvas-controls, .export-panel, .header-actions,
+      .grid-tabs, .mobile-grid-selector, .mobile-outline-toggle,
+      .style-toggle, .mobile-canvas-controls { display: none !important; }
+      
+      /* 显示移动端元素 */
+      .bottom-toolbar { display: flex !important; }
       .mobile-quick-colors { display: flex !important; }
       .mobile-slide-unlock { display: flex !important; }
       .mobile-scene-hint { display: flex !important; }
       .mobile-anim-status { display: flex !important; }
       .mobile-overlay { display: block !important; }
+      .mobile-panel { display: block !important; }
       .mobile-color-panel, .mobile-parts-panel, .mobile-favorites-panel { display: block !important; }
-      
-      /* Hide desktop elements */
-      .sidebar { display: none !important; }
-      .canvas-controls { display: none !important; }
-      .export-panel { display: none !important; }
-      .header-actions { display: none !important; }
-      .grid-tabs { display: none !important; }
-      .mobile-grid-selector { display: none !important; }
-      .mobile-outline-toggle { display: none !important; }
-      .style-toggle { display: none !important; }
-      .mobile-panel { display: none !important; }
       
       /* ============ 全屏沉浸式布局 ============ */
       html, body {
@@ -1172,7 +1167,8 @@
         flex-direction: column;
         height: 100vh;
         height: 100dvh;
-        background: linear-gradient(180deg, #FFB6C1 0%, #DDA0DD 50%, #B0C4DE 100%);
+        height: -webkit-fill-available;
+        background: transparent;
         overflow: hidden;
         position: relative;
       }
@@ -1226,30 +1222,35 @@
       .canvas-area {
         flex: 1;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
         position: relative;
         background: transparent;
       }
       
       .canvas-wrapper {
         width: 100%;
-        max-width: min(85vw, 400px);
-        max-height: 55vh;
-        aspect-ratio: 1;
-        background: rgba(255,255,255,0.95);
-        border-radius: 32px;
-        box-shadow: 0 8px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        aspect-ratio: auto;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        padding: 0;
       }
       
       #pixelCanvas {
-        max-width: 90%;
-        max-height: 90%;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
         image-rendering: pixelated;
         image-rendering: crisp-edges;
       }
@@ -1458,335 +1459,6 @@
       
       .toolbar-tab.active span {
         color: #FF6B9D;
-        font-weight: 600;
-      }
-      
-      /* ============ 遮罩 ============ */
-      .mobile-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s;
-        z-index: 150;
-      }
-      
-      .mobile-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      
-      /* ============ 颜色选择面板 ============ */
-      .mobile-color-panel {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #fff;
-        border-radius: 24px 24px 0 0;
-        padding: 20px;
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
-        transform: translateY(100%);
-        transition: transform 0.3s ease-out;
-        z-index: 200;
-        max-height: 70vh;
-        overflow-y: auto;
-      }
-      
-      .mobile-color-panel.open {
-        transform: translateY(0);
-      }
-      
-      .panel-handle {
-        width: 40px;
-        height: 4px;
-        background: #ddd;
-        border-radius: 2px;
-        margin: 0 auto 16px;
-      }
-      
-      .mobile-panel-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-      
-      .mobile-panel-tab {
-        flex: 1;
-        padding: 12px 16px;
-        border: none;
-        background: #f5f5f5;
-        border-radius: 14px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      
-      .mobile-panel-tab.active {
-        background: linear-gradient(135deg, #FF6B9D, #AA96DA);
-        color: #fff;
-        box-shadow: 0 4px 15px rgba(255,107,157,0.3);
-      }
-      
-      .mobile-color-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 14px;
-      }
-      
-      .mobile-color-swatch {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        border: 3px solid transparent;
-      }
-      
-      /* ============ 画布区域 - 全屏 ============ */
-      .canvas-area {
-        flex: 1;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        background: transparent;
-        transition: background 0.5s ease;
-      }
-      
-      .canvas-wrapper {
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        max-height: 100%;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.95);
-        border-radius: 24px;
-        margin: 0 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      }
-      
-      #pixelCanvas {
-        max-width: 85vw;
-        max-height: 55vh;
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
-      }
-      
-      /* ============ 场景提示 ============ */
-      .mobile-scene-hint {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 16px;
-        background: rgba(255,255,255,0.9);
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        color: #333;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      }
-      
-      /* ============ 动画状态 ============ */
-      .mobile-anim-status {
-        display: none;
-        position: absolute;
-        top: 70px;
-        right: 16px;
-        background: rgba(255,255,255,0.9);
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        color: #333;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-        align-items: center;
-        gap: 6px;
-      }
-      
-      /* ============ 滑动解锁条 ============ */
-      .mobile-slide-unlock {
-        display: none;
-        position: absolute;
-        bottom: 170px;
-        left: 20px;
-        right: 20px;
-        height: 60px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 30px;
-        overflow: hidden;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      }
-      
-      .slide-progress {
-        position: absolute;
-        left: 4px;
-        top: 4px;
-        height: 52px;
-        width: 52px;
-        border-radius: 26px;
-        background: linear-gradient(135deg, #FF6B9D, #AA96DA);
-        transition: width 0.1s ease-out;
-      }
-      
-      .slide-track {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.2s;
-      }
-      
-      .slide-text {
-        color: rgba(255,255,255,0.7);
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: 3px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-      }
-      
-      .slide-arrow {
-        position: absolute;
-        right: 20px;
-        color: rgba(255,255,255,0.4);
-        font-size: 20px;
-      }
-      
-      .slide-thumb {
-        position: absolute;
-        left: 4px;
-        top: 4px;
-        width: 52px;
-        height: 52px;
-        background: #fff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        cursor: grab;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        transition: left 0.3s ease-out, transform 0.1s;
-        touch-action: none;
-        z-index: 2;
-      }
-      
-      .slide-thumb:active {
-        cursor: grabbing;
-        transform: scale(0.95);
-      }
-      
-      .slide-thumb.success {
-        background: linear-gradient(135deg, #4CAF50, #8BC34A);
-      }
-      
-      /* ============ 快速颜色条 ============ */
-      .mobile-quick-colors {
-        display: none;
-        justify-content: center;
-        gap: 32px;
-        padding: 14px 20px;
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-      
-      .mobile-color-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-      }
-      
-      .mobile-color-dot {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        border: 3px solid rgba(255,255,255,0.9);
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-        transition: transform 0.2s;
-      }
-      
-      .mobile-color-dot:active {
-        transform: scale(1.15);
-      }
-      
-      .mobile-color-label {
-        font-size: 10px;
-        color: #666;
-      }
-      
-      /* ============ 底部工具栏 ============ */
-      .bottom-toolbar {
-        background: rgba(255,255,255,0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 24px 24px 0 0;
-        box-shadow: 0 -4px 30px rgba(0,0,0,0.08);
-        height: 75px;
-        padding-bottom: env(safe-area-inset-bottom, 12px);
-      }
-      
-      .bottom-toolbar-inner {
-        display: flex;
-        justify-content: space-around;
-        align-items: flex-start;
-        height: 100%;
-        padding-top: 10px;
-        max-width: 400px;
-        margin: 0 auto;
-      }
-      
-      .toolbar-tab {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        padding: 6px 16px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        border-radius: 14px;
-        transition: all 0.2s;
-      }
-      
-      .toolbar-tab:active {
-        background: rgba(0,0,0,0.05);
-        transform: scale(0.92);
-      }
-      
-      .toolbar-tab svg {
-        width: 26px;
-        height: 26px;
-        color: #333;
-      }
-      
-      .toolbar-tab span {
-        font-size: 11px;
-        color: #666;
-        font-weight: 500;
-      }
-      
-      .toolbar-tab.active span {
-        color: #FF6B9D;
-        font-weight: 600;
-      }
-        color: #666;
-      }
-      
-      .toolbar-tab.active span {
-        color: var(--primary);
         font-weight: 600;
       }
       
@@ -2325,120 +1997,31 @@
     <div class="mobile-color-grid" id="mobileColorGrid"></div>
   </div>
 
-  <!-- 部件选择面板 -->
-  <div class="mobile-parts-panel" id="mobilePartsPanel">
-    <div class="panel-handle"></div>
-    <div class="mobile-parts-tabs" id="mobilePartsTabs">
-      <button class="mobile-parts-tab active" data-parts="hair">发型</button>
-      <button class="mobile-parts-tab" data-parts="face">表情</button>
-      <button class="mobile-parts-tab" data-parts="cloth">服装</button>
-      <button class="mobile-parts-tab" data-parts="acc">配件</button>
-    </div>
-    <div class="mobile-parts-grid" id="mobilePartsGrid"></div>
-  </div>
 
-  <!-- 动画选择面板 -->
-  <div class="mobile-parts-panel" id="mobileAnimPanel">
-    <div class="panel-handle"></div>
-    <div class="mobile-parts-grid" id="mobileAnimGrid" style="grid-template-columns: repeat(3, 1fr);"></div>
-  </div>
 
-  <!-- 收藏面板 -->
-  <div class="mobile-favorites-panel" id="mobileFavoritesPanel">
-    <div class="panel-handle"></div>
-    <div class="mobile-favorites-header">
-      <span class="mobile-favorites-title">我的收藏</span>
-      <span class="mobile-favorites-count" id="mobileFavoritesCount">0/10</span>
-      <button class="mobile-favorites-add" onclick="saveToMobileFavorites()">+</button>
-    </div>
-    <div class="mobile-favorites-grid" id="mobileFavoritesGrid"></div>
-  </div>
-
-  <!-- 更多菜单 -->
-  <div class="mobile-more-menu" id="mobileMoreMenu">
-    <button class="mobile-more-item" onclick="mobileExport('apng')">
-      <span class="mobile-more-icon">🍎</span>
-      <span class="mobile-more-label">APNG动画</span>
-      <span class="mobile-more-badge">iOS首选</span>
-    </button>
-    <button class="mobile-more-item" onclick="mobileExport('gif')">
-      <span class="mobile-more-icon">🎞️</span>
-      <span class="mobile-more-label">GIF动画</span>
-      <span class="mobile-more-badge">微信可用</span>
-    </button>
-    <button class="mobile-more-item" onclick="mobileExport('mp4')">
-      <span class="mobile-more-icon">🎥</span>
-      <span class="mobile-more-label">MP4视频</span>
-    </button>
-    <button class="mobile-more-item" onclick="downloadPNG()">
-      <span class="mobile-more-icon">💾</span>
-      <span class="mobile-more-label">下载PNG</span>
-    </button>
-  </div>
-
-  <!-- Mobile Bottom Toolbar -->
-  <nav class="bottom-toolbar">
-    <div class="bottom-toolbar-inner">
-      <button class="toolbar-tab" onclick="openMobilePartsPanel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-        <span>部件</span>
-      </button>
-      <button class="toolbar-tab" onclick="openMobileAnimPanel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="5 3 19 12 5 21 5 3"/>
-        </svg>
-        <span>动效</span>
-      </button>
-      <button class="toolbar-tab" onclick="openMobileFavoritesPanel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span>收藏</span>
-      </button>
-      <button class="toolbar-tab" onclick="toggleMobileMoreMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="1"/>
-          <circle cx="12" cy="5" r="1"/>
-          <circle cx="12" cy="19" r="1"/>
-        </svg>
-        <span>更多</span>
-      </button>
-    </div>
-  </nav>
-
-    
-    <!-- Mobile Outline Toggle -->
-    <button class="mobile-outline-toggle active" id="mobileOutlineToggle" onclick="toggleOutline()">◻️</button>
-    
+    <!-- 桌面端尺寸切换 -->
     <div class="grid-tabs">
       <button class="grid-tab" data-size="16">头像 16px</button>
       <button class="grid-tab active" data-size="32">全身 32px</button>
       <button class="grid-tab" data-size="64">场景 64px</button>
     </div>
     
+    <!-- 桌面端轮廓切换 -->
     <div class="style-toggle">
       <button class="outline-toggle active" id="outlineToggle" onclick="toggleOutline()">◻️ 轮廓</button>
     </div>
     
+    <!-- 桌面端操作按钮 -->
     <div class="header-actions">
       <button class="btn btn-secondary" onclick="randomGenerate()">🎲 随机</button>
       <button class="btn btn-primary" onclick="saveCharacter()">💾 保存</button>
-    </div>
-    
-    <!-- Mobile Header Actions -->
-    <div class="mobile-header-actions">
-      <button class="btn btn-secondary btn-sm" onclick="randomGenerate()">🎲</button>
-      <button class="btn btn-primary btn-sm" onclick="saveCharacter()">💾</button>
     </div>
   </header>
 
   <!-- Mobile Bottom Toolbar -->
   <nav class="bottom-toolbar">
     <div class="bottom-toolbar-inner">
-      <button class="toolbar-tab active" data-panel="colors">
+      <button class="toolbar-tab active" data-panel="colors" onclick="openMobilePanel('colors')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <path d="M12 2a10 10 0 0 1 10 10"/>
@@ -2446,14 +2029,14 @@
         </svg>
         <span>颜色</span>
       </button>
-      <button class="toolbar-tab" data-panel="hair">
+      <button class="toolbar-tab" data-panel="hair" onclick="openMobilePanel('hair')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2C8 2 4 6 4 12c0 3 1 5 3 7l1 3h8l1-3c2-2 3-4 3-7 0-6-4-10-8-10z"/>
           <path d="M8 22h8"/>
         </svg>
         <span>发型</span>
       </button>
-      <button class="toolbar-tab" data-panel="face">
+      <button class="toolbar-tab" data-panel="face" onclick="openMobilePanel('face')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <circle cx="9" cy="10" r="1" fill="currentColor"/>
@@ -2462,26 +2045,26 @@
         </svg>
         <span>表情</span>
       </button>
-      <button class="toolbar-tab" data-panel="clothes">
+      <button class="toolbar-tab" data-panel="clothes" onclick="openMobilePanel('clothes')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M6 2L2 6v4l4-2 2 4 2-4 4 2V6l-4-4h-4z"/>
           <path d="M12 8v14"/>
         </svg>
         <span>服装</span>
       </button>
-      <button class="toolbar-tab" data-panel="accessories">
+      <button class="toolbar-tab" data-panel="accessories" onclick="openMobilePanel('accessories')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
         <span>配件</span>
       </button>
-      <button class="toolbar-tab" data-panel="animation">
+      <button class="toolbar-tab" data-panel="animation" onclick="openMobilePanel('animation')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
         <span>动画</span>
       </button>
-      <button class="toolbar-tab" data-panel="scene" id="mobileSceneTab" style="display:none;">
+      <button class="toolbar-tab" data-panel="scene" id="mobileSceneTab" style="display:none;" onclick="openMobilePanel('scene')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <path d="M2 12h20"/>
@@ -8949,8 +8532,10 @@
 
     function closeMobilePanel() {
       const panel = document.getElementById('mobilePanel');
-      panel.classList.remove('open');
+      if (panel) panel.classList.remove('open');
       isMobilePanelOpen = false;
+      document.querySelectorAll('.toolbar-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelector('.toolbar-tab[data-panel="colors"]')?.classList.add('active');
     }
 
     function loadMobilePanelContent(tabName, container) {
@@ -9977,21 +9562,12 @@
     
     // ============ 关闭所有移动端面板 ============
     function closeAllMobilePanels() {
-      const panels = ['mobileColorPanel', 'mobilePartsPanel', 'mobileAnimPanel', 'mobileFavoritesPanel', 'mobileMoreMenu'];
-      panels.forEach(id => {
+      ['mobileColorPanel', 'mobilePanel'].forEach(id => {
         document.getElementById(id)?.classList.remove('open');
       });
       document.getElementById('mobileOverlay')?.classList.remove('active');
     }
-    
-    // ============ Service Worker 注册 ============
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('Service Worker 注册成功:', reg.scope))
-          .catch(err => console.log('Service Worker 注册失败:', err));
-      });
-    }
   </script>
+
 
 </body></html>
