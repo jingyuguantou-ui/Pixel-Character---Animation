@@ -291,188 +291,184 @@ window.addEventListener('resize',updateCanvasSize);
 const OUTLINE_COLOR='#1a1a1a';
 function lightenColor(h,p){const n=parseInt(h.replace('#',''),16);const r=Math.min(255,(n>>16)+Math.floor(255*p/100));const g=Math.min(255,((n>>8)&0xFF)+Math.floor(255*p/100));const b=Math.min(255,(n&0xFF)+Math.floor(255*p/100));return'#'+(0x1000000+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function darkenColor(h,p){const n=parseInt(h.slice(1),16);const a=Math.round(2.55*p);return'#'+(0x1000000+Math.max((n>>16)-a,0)*0x10000+Math.max((n>>8&0xFF)-a,0)*0x100+Math.max((n&0xFF)-a,0)).toString(16).slice(1);}
-function drawPixel(x,y,color){ctx.fillStyle=color;ctx.fillRect(x,y,state.pixelSize-1,state.pixelSize-1);}
-function drawRect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h);if(state.outlineEnabled){ctx.fillStyle=OUTLINE_COLOR;ctx.fillRect(x,y,w,1);ctx.fillRect(x,y,1,h);}}
+function drawPixel(x,y,color){ctx.fillStyle=color;ctx.fillRect(x*state.pixelSize,y*state.pixelSize,state.pixelSize-1,state.pixelSize-1);}
+function drawRect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x*state.pixelSize,y*state.pixelSize,w*state.pixelSize,h*state.pixelSize);if(state.outlineEnabled){ctx.fillStyle=OUTLINE_COLOR;ctx.fillRect(x*state.pixelSize,y*state.pixelSize,w*state.pixelSize,1);ctx.fillRect(x*state.pixelSize,y*state.pixelSize,1,h*state.pixelSize);}}
 function adjustBrightness(h,p){const n=parseInt(h.slice(1),16);const a=Math.round(2.55*p);const R=Math.min(255,Math.max(0,(n>>16)+a));const G=Math.min(255,Math.max(0,(n>>8&0xFF)+a));const B=Math.min(255,Math.max(0,(n&0xFF)+a));return'#'+(0x1000000+R*0x10000+G*0x100+B).toString(16).slice(1);}
 function drawStar(cx,cy,ir,or,p){const s=4,t=Math.PI/s;ctx.beginPath();for(let i=0;i<s*2;i++){const r=i%2===0?or:ir,a=i*t-Math.PI/2;const x=cx+Math.cos(a)*r*p/4,y=cy+Math.sin(a)*r*p/4;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.closePath();ctx.fill();}
 function drawHeart(cx,cy,sz,p){const s=sz*p/4;ctx.fillStyle='#FF6B9D';ctx.fillRect(cx,cy,s,s);ctx.fillRect(cx-s,cy,s,s);ctx.fillRect(cx,cy-s,s,s);ctx.fillRect(cx+s,cy,s,s);ctx.fillRect(cx,cy+s,s,s);}
 function drawCloud(x,y,sz,p){ctx.fillRect(x*p,y*p,sz*p,2*p);ctx.fillRect((x-1)*p,(y+1)*p,(sz+2)*p,2*p);ctx.fillRect((x+1)*p,(y-1)*p,(sz-2)*p,p);}
 // Hair
 function drawHair(x,headY,offsetX){
-  const p=state.pixelSize;
   const hairH=state.hair==='hair-4'||state.hair==='hair-6'?4:3;
-  const hairY=headY-hairH*p;
+  const hairY=headY-hairH;
   switch(state.hair){
     case'hair-0':break;
-    case'hair-1':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);break;
-    case'hair-2':for(let dy=0;dy<8;dy++){const w=dy<2?5:(dy<5?6:4);for(let dx=-w;dx<w;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);}break;
-    case'hair-3':for(let dy=0;dy<6;dy++)for(let dx=-4;dx<5;dx++)if((dx+dy)%2===0)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);break;
-    case'hair-4':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);for(let dy=0;dy<6;dy++)drawPixel(x+(4+offsetX)*p,hairY+(dy-2)*p,state.hairColor);break;
-    case'hair-5':drawRect(x-5*p+offsetX,hairY-2*p,10*p,4*p,state.accentColor);drawRect(x-6*p+offsetX,hairY+p,12*p,2*p,state.accentColor);break;
-    case'hair-6':for(let dy=0;dy<4;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);break;
-    case'hair-7':for(let dy=0;dy<5;dy++)for(let dx=-5;dx<6;dx++)if(dy<2||Math.abs(dx)<4)drawPixel(x+(dx+offsetX)*p,hairY+(dy-1)*p,state.hairColor);break;
-    case'hair-8':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);for(let dy=0;dy<5;dy++){drawPixel(x+(-4+offsetX)*p,hairY+dy*p,state.hairColor);drawPixel(x+(4+offsetX)*p,hairY+dy*p,state.hairColor);}break;
-    case'hair-9':for(let dy=0;dy<5;dy++){const w=dy<2?4:5;for(let dx=-w;dx<w+1;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);}break;
-    case'hair-10':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);for(let dy=0;dy<4;dy++){drawPixel(x+(-3+offsetX)*p,hairY+(hairH+dy)*p,state.hairColor);drawPixel(x+(3+offsetX)*p,hairY+(hairH+dy)*p,state.hairColor);}break;
-    case'hair-11':for(let dy=0;dy<3;dy++)for(let dx=-2+dy;dx<3-dy;dx++)drawPixel(x+(dx+offsetX)*p,hairY+(-2+dy)*p,state.hairColor);for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);break;
-    case'hair-12':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<5;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);drawPixel(x+(3+offsetX)*p,hairY,state.hairColor);break;
-    case'hair-13':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)if(dx!==-1&&dx!==0)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);break;
-    case'hair-14':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);for(let dy=0;dy<3;dy++)for(let dx=-2;dx<3;dx++)drawPixel(x+(dx+offsetX)*p,hairY+(-4+dy)*p,state.hairColor);break;
-    case'hair-15':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX)*p,hairY+dy*p,state.hairColor);for(let dy=0;dy<3;dy++)drawPixel(x+offsetX*p,hairY+(-3+dy)*p,state.hairColor);break;
+    case'hair-1':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);break;
+    case'hair-2':for(let dy=0;dy<8;dy++){const w=dy<2?5:(dy<5?6:4);for(let dx=-w;dx<w;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);}break;
+    case'hair-3':for(let dy=0;dy<6;dy++)for(let dx=-4;dx<5;dx++)if((dx+dy)%2===0)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);break;
+    case'hair-4':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);for(let dy=0;dy<6;dy++)drawPixel(x+(4+offsetX),hairY+(dy-2),state.hairColor);break;
+    case'hair-5':drawRect(x-5+offsetX,hairY-2,10,4,state.accentColor);drawRect(x-6+offsetX,hairY+1,12,2,state.accentColor);break;
+    case'hair-6':for(let dy=0;dy<4;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);break;
+    case'hair-7':for(let dy=0;dy<5;dy++)for(let dx=-5;dx<6;dx++)if(dy<2||Math.abs(dx)<4)drawPixel(x+(dx+offsetX),hairY+(dy-1),state.hairColor);break;
+    case'hair-8':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);for(let dy=0;dy<5;dy++){drawPixel(x+(-4+offsetX),hairY+dy,state.hairColor);drawPixel(x+(4+offsetX),hairY+dy,state.hairColor);}break;
+    case'hair-9':for(let dy=0;dy<5;dy++){const w=dy<2?4:5;for(let dx=-w;dx<w+1;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);}break;
+    case'hair-10':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);for(let dy=0;dy<4;dy++){drawPixel(x+(-3+offsetX),hairY+(hairH+dy),state.hairColor);drawPixel(x+(3+offsetX),hairY+(hairH+dy),state.hairColor);}break;
+    case'hair-11':for(let dy=0;dy<3;dy++)for(let dx=-2+dy;dx<3-dy;dx++)drawPixel(x+(dx+offsetX),hairY+(-2+dy),state.hairColor);for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);break;
+    case'hair-12':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<5;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);drawPixel(x+(3+offsetX),hairY,state.hairColor);break;
+    case'hair-13':for(let dy=0;dy<hairH;dy++)for(let dx=-4;dx<5;dx++)if(dx!==-1&&dx!==0)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);break;
+    case'hair-14':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);for(let dy=0;dy<3;dy++)for(let dx=-2;dx<3;dx++)drawPixel(x+(dx+offsetX),hairY+(-4+dy),state.hairColor);break;
+    case'hair-15':for(let dy=0;dy<hairH;dy++)for(let dx=-3;dx<4;dx++)drawPixel(x+(dx+offsetX),hairY+dy,state.hairColor);for(let dy=0;dy<3;dy++)drawPixel(x+offsetX,hairY+(-3+dy),state.hairColor);break;
   }
 }
 // Face
-function drawFace(x,headY,offsetX){
-  const p=state.pixelSize;
-  const eyeY=headY+3*p, mouthY=headY+6*p;
+function drawFace(x,headY,offsetX){const eyeY=headY+3, mouthY=headY+6;
   const fi=parseInt(state.face.split('-')[1]);
   const c='#333',mc='#E88B8B';
   switch(fi){
-    case 0:case 5:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY,c);break;
-    case 1:drawPixel(x+(-2+offsetX)*p,eyeY-p,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);break;
-    case 2:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY,c);drawPixel(x+offsetX*p,eyeY+2*p,c);break;
-    case 3:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY,c);drawPixel(x+(-2+offsetX)*p,eyeY+2*p,c);drawPixel(x+(2+offsetX)*p,eyeY+2*p,c);break;
-    case 4:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);drawPixel(x+(3+offsetX)*p,eyeY,c);break;
-    case 6:drawPixel(x+(-2+offsetX)*p,eyeY-p,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);drawPixel(x+(-3+offsetX)*p,eyeY-2*p,c);drawPixel(x+(3+offsetX)*p,eyeY-2*p,c);break;
-    case 7:drawPixel(x+(-2+offsetX)*p,eyeY+p,c);drawPixel(x+(2+offsetX)*p,eyeY+p,c);drawPixel(x+(-1+offsetX)*p,eyeY,'#666');drawPixel(x+(1+offsetX)*p,eyeY,'#666');break;
-    case 8:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);drawPixel(x+offsetX*p,eyeY+p,c);break;
-    case 9:case 10:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY,c);break;
-    case 11:drawRect(x+(-4+offsetX)*p,eyeY-p,8*p,3*p,'#333');break;
-    case 12:drawPixel(x+(-2+offsetX)*p,eyeY,'#FF1744');drawPixel(x+(2+offsetX)*p,eyeY,'#FF1744');drawPixel(x+(-3+offsetX)*p,eyeY-p,'#FF1744');drawPixel(x+(-1+offsetX)*p,eyeY-p,'#FF1744');drawPixel(x+(1+offsetX)*p,eyeY-p,'#FF1744');drawPixel(x+(3+offsetX)*p,eyeY-p,'#FF1744');break;
-    case 13:for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2+state.frame*0.1;const sx=Math.cos(a)*2*p,sy=Math.sin(a)*2*p;drawPixel(x+(-2+offsetX)*p+sx,eyeY+sy,c);drawPixel(x+(2+offsetX)*p+sx,eyeY+sy,c);}break;
-    case 14:drawPixel(x+(-2+offsetX)*p,eyeY,'#FF1744');drawPixel(x+(2+offsetX)*p,eyeY,'#FF1744');drawPixel(x+(-3+offsetX)*p,eyeY-p,'#FF1744');drawPixel(x+(3+offsetX)*p,eyeY-p,'#FF1744');break;
-    case 15:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY,c);drawPixel(x+(-1+offsetX)*p,eyeY-p,'#FFD700');drawPixel(x+(1+offsetX)*p,eyeY-p,'#FFD700');break;
-    case 16:drawRect(x+(-3+offsetX)*p,eyeY-p,2*p,2*p,'#00BFFF');drawRect(x+(1+offsetX)*p,eyeY-p,2*p,2*p,'#00BFFF');break;
-    case 17:drawPixel(x+(-2+offsetX)*p,eyeY,'#FF69B4');drawPixel(x+(2+offsetX)*p,eyeY,'#FF69B4');drawPixel(x+offsetX*p,eyeY+p,'#FF69B4');break;
-    case 18:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(3+offsetX)*p,eyeY,c);drawPixel(x+(-1+offsetX)*p,eyeY+p,c);drawPixel(x+(2+offsetX)*p,eyeY+p,c);break;
-    case 19:drawPixel(x+(-2+offsetX)*p,eyeY,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);break;
-    case 20:drawPixel(x+(-2+offsetX)*p,eyeY+p,c);drawPixel(x+(2+offsetX)*p,eyeY+p,c);drawPixel(x+(-3+offsetX)*p,eyeY-p,c);drawPixel(x+(3+offsetX)*p,eyeY-p,c);break;
-    case 21:drawPixel(x+(-2+offsetX)*p,eyeY-p,'#FFD700');drawPixel(x+(-1+offsetX)*p,eyeY,'#FFD700');drawPixel(x+(-3+offsetX)*p,eyeY,'#FFD700');drawPixel(x+(1+offsetX)*p,eyeY-p,'#FFD700');drawPixel(x+(2+offsetX)*p,eyeY,'#FFD700');drawPixel(x+(3+offsetX)*p,eyeY,'#FFD700');break;
-    case 22:drawPixel(x+(-2+offsetX)*p,eyeY-p,c);drawPixel(x+(2+offsetX)*p,eyeY-p,c);drawPixel(x+(-3+offsetX)*p,eyeY-2*p,c);drawPixel(x+(-2+offsetX)*p,eyeY-2*p,c);drawPixel(x+(2+offsetX)*p,eyeY-2*p,c);drawPixel(x+(3+offsetX)*p,eyeY-2*p,c);break;
+    case 0:case 5:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY,c);break;
+    case 1:drawPixel(x+(-2+offsetX),eyeY-1,c);drawPixel(x+(2+offsetX),eyeY-1,c);break;
+    case 2:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY,c);drawPixel(x+offsetX,eyeY+2,c);break;
+    case 3:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY,c);drawPixel(x+(-2+offsetX),eyeY+2,c);drawPixel(x+(2+offsetX),eyeY+2,c);break;
+    case 4:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY-1,c);drawPixel(x+(3+offsetX),eyeY,c);break;
+    case 6:drawPixel(x+(-2+offsetX),eyeY-1,c);drawPixel(x+(2+offsetX),eyeY-1,c);drawPixel(x+(-3+offsetX),eyeY-2,c);drawPixel(x+(3+offsetX),eyeY-2,c);break;
+    case 7:drawPixel(x+(-2+offsetX),eyeY+1,c);drawPixel(x+(2+offsetX),eyeY+1,c);drawPixel(x+(-1+offsetX),eyeY,'#666');drawPixel(x+(1+offsetX),eyeY,'#666');break;
+    case 8:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY-1,c);drawPixel(x+offsetX,eyeY+1,c);break;
+    case 9:case 10:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY,c);break;
+    case 11:drawRect(x+(-4+offsetX),eyeY-1,8,3,'#333');break;
+    case 12:drawPixel(x+(-2+offsetX),eyeY,'#FF1744');drawPixel(x+(2+offsetX),eyeY,'#FF1744');drawPixel(x+(-3+offsetX),eyeY-1,'#FF1744');drawPixel(x+(-1+offsetX),eyeY-1,'#FF1744');drawPixel(x+(1+offsetX),eyeY-1,'#FF1744');drawPixel(x+(3+offsetX),eyeY-1,'#FF1744');break;
+    case 13:for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2+state.frame*0.1;const sx=Math.cos(a)*2,sy=Math.sin(a)*2;drawPixel(x+(-2+offsetX)+sx,eyeY+sy,c);drawPixel(x+(2+offsetX)+sx,eyeY+sy,c);}break;
+    case 14:drawPixel(x+(-2+offsetX),eyeY,'#FF1744');drawPixel(x+(2+offsetX),eyeY,'#FF1744');drawPixel(x+(-3+offsetX),eyeY-1,'#FF1744');drawPixel(x+(3+offsetX),eyeY-1,'#FF1744');break;
+    case 15:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY,c);drawPixel(x+(-1+offsetX),eyeY-1,'#FFD700');drawPixel(x+(1+offsetX),eyeY-1,'#FFD700');break;
+    case 16:drawRect(x+(-3+offsetX),eyeY-1,2,2,'#00BFFF');drawRect(x+(1+offsetX),eyeY-1,2,2,'#00BFFF');break;
+    case 17:drawPixel(x+(-2+offsetX),eyeY,'#FF69B4');drawPixel(x+(2+offsetX),eyeY,'#FF69B4');drawPixel(x+offsetX,eyeY+1,'#FF69B4');break;
+    case 18:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(3+offsetX),eyeY,c);drawPixel(x+(-1+offsetX),eyeY+1,c);drawPixel(x+(2+offsetX),eyeY+1,c);break;
+    case 19:drawPixel(x+(-2+offsetX),eyeY,c);drawPixel(x+(2+offsetX),eyeY-1,c);break;
+    case 20:drawPixel(x+(-2+offsetX),eyeY+1,c);drawPixel(x+(2+offsetX),eyeY+1,c);drawPixel(x+(-3+offsetX),eyeY-1,c);drawPixel(x+(3+offsetX),eyeY-1,c);break;
+    case 21:drawPixel(x+(-2+offsetX),eyeY-1,'#FFD700');drawPixel(x+(-1+offsetX),eyeY,'#FFD700');drawPixel(x+(-3+offsetX),eyeY,'#FFD700');drawPixel(x+(1+offsetX),eyeY-1,'#FFD700');drawPixel(x+(2+offsetX),eyeY,'#FFD700');drawPixel(x+(3+offsetX),eyeY,'#FFD700');break;
+    case 22:drawPixel(x+(-2+offsetX),eyeY-1,c);drawPixel(x+(2+offsetX),eyeY-1,c);drawPixel(x+(-3+offsetX),eyeY-2,c);drawPixel(x+(-2+offsetX),eyeY-2,c);drawPixel(x+(2+offsetX),eyeY-2,c);drawPixel(x+(3+offsetX),eyeY-2,c);break;
   }
   switch(fi){
-    case 0:case 5:drawPixel(x+(-1+offsetX)*p,mouthY,mc);drawPixel(x+offsetX*p,mouthY,mc);drawPixel(x+(1+offsetX)*p,mouthY,mc);break;
-    case 1:drawPixel(x+(-1+offsetX)*p,mouthY,'#C77B7B');drawPixel(x+offsetX*p,mouthY,'#C77B7B');drawPixel(x+(1+offsetX)*p,mouthY,'#C77B7B');break;
-    case 2:drawPixel(x+offsetX*p,mouthY,'#C77B7B');break;
-    case 3:drawRect(x+(-1+offsetX)*p,mouthY-p,3*p,2*p,mc);break;
-    case 4:drawPixel(x+offsetX*p,mouthY,mc);break;
-    case 6:drawPixel(x+(-1+offsetX)*p,mouthY+p,'#C77B7B');drawPixel(x+offsetX*p,mouthY,'#C77B7B');drawPixel(x+(1+offsetX)*p,mouthY-p,'#C77B7B');break;
-    case 7:drawPixel(x+(-1+offsetX)*p,mouthY-p,'#C77B7B');drawPixel(x+offsetX*p,mouthY,'#C77B7B');drawPixel(x+(1+offsetX)*p,mouthY-p,'#C77B7B');break;
-    case 8:drawPixel(x+(-1+offsetX)*p,mouthY,'#C77B7B');drawPixel(x+offsetX*p,mouthY+p,'#C77B7B');break;
-    case 9:case 10:drawPixel(x+(-1+offsetX)*p,mouthY,'#C77B7B');drawPixel(x+offsetX*p,mouthY,'#C77B7B');break;
-    case 10:drawPixel(x+offsetX*p,mouthY+p,'#FF69B4');drawPixel(x+(1+offsetX)*p,mouthY+p,'#FF69B4');break;
-    case 11:case 12:drawPixel(x+(-1+offsetX)*p,mouthY,mc);drawPixel(x+offsetX*p,mouthY,mc);drawPixel(x+(1+offsetX)*p,mouthY,mc);break;
-    case 13:drawPixel(x+offsetX*p,mouthY,'#333');break;
-    case 14:drawPixel(x+(-1+offsetX)*p,mouthY,'#FF1744');drawPixel(x+offsetX*p,mouthY,'#FF1744');drawPixel(x+(1+offsetX)*p,mouthY,'#FF1744');drawPixel(x+offsetX*p,mouthY+p,'#FF1744');break;
-    case 15:drawPixel(x+(-1+offsetX)*p,mouthY,'#FFD700');drawPixel(x+offsetX*p,mouthY,'#FFD700');drawPixel(x+(1+offsetX)*p,mouthY,'#FFD700');break;
-    case 16:drawRect(x+(-2+offsetX)*p,mouthY,4*p,p,'#00FF00');break;
-    case 17:drawPixel(x+(-1+offsetX)*p,mouthY,'#FF69B4');drawPixel(x+offsetX*p,mouthY,'#FF69B4');drawPixel(x+(1+offsetX)*p,mouthY,'#FF69B4');drawPixel(x+(-2+offsetX)*p,mouthY+p,'#FF69B4');drawPixel(x+(2+offsetX)*p,mouthY+p,'#FF69B4');break;
-    case 18:drawPixel(x+(-1+offsetX)*p,mouthY-p,'#FF1744');drawPixel(x+offsetX*p,mouthY+p,'#FF1744');drawPixel(x+(1+offsetX)*p,mouthY-p,'#FF1744');break;
-    case 19:case 20:case 21:case 22:drawPixel(x+offsetX*p,mouthY,'#C77B7B');break;
+    case 0:case 5:drawPixel(x+(-1+offsetX),mouthY,mc);drawPixel(x+offsetX,mouthY,mc);drawPixel(x+(1+offsetX),mouthY,mc);break;
+    case 1:drawPixel(x+(-1+offsetX),mouthY,'#C77B7B');drawPixel(x+offsetX,mouthY,'#C77B7B');drawPixel(x+(1+offsetX),mouthY,'#C77B7B');break;
+    case 2:drawPixel(x+offsetX,mouthY,'#C77B7B');break;
+    case 3:drawRect(x+(-1+offsetX),mouthY-1,3,2,mc);break;
+    case 6:drawPixel(x+(-1+offsetX),mouthY+1,'#C77B7B');drawPixel(x+offsetX,mouthY,'#C77B7B');drawPixel(x+(1+offsetX),mouthY-1,'#C77B7B');break;
+    case 7:drawPixel(x+(-1+offsetX),mouthY-1,'#C77B7B');drawPixel(x+offsetX,mouthY,'#C77B7B');drawPixel(x+(1+offsetX),mouthY-1,'#C77B7B');break;
+    case 8:drawPixel(x+(-1+offsetX),mouthY,'#C77B7B');drawPixel(x+offsetX,mouthY+1,'#C77B7B');break;
+    case 9:case 10:drawPixel(x+(-1+offsetX),mouthY,'#C77B7B');drawPixel(x+offsetX,mouthY,'#C77B7B');break;
+    case 10:drawPixel(x+offsetX,mouthY+1,'#FF69B4');drawPixel(x+(1+offsetX),mouthY+1,'#FF69B4');break;
+    case 11:case 12:drawPixel(x+(-1+offsetX),mouthY,mc);drawPixel(x+offsetX,mouthY,mc);drawPixel(x+(1+offsetX),mouthY,mc);break;
+    case 13:drawPixel(x+offsetX,mouthY,'#333');break;
+    case 14:drawPixel(x+(-1+offsetX),mouthY,'#FF1744');drawPixel(x+offsetX,mouthY,'#FF1744');drawPixel(x+(1+offsetX),mouthY,'#FF1744');drawPixel(x+offsetX,mouthY+1,'#FF1744');break;
+    case 15:drawPixel(x+(-1+offsetX),mouthY,'#FFD700');drawPixel(x+offsetX,mouthY,'#FFD700');drawPixel(x+(1+offsetX),mouthY,'#FFD700');break;
+    case 16:drawRect(x+(-2+offsetX),mouthY,4,1,'#00FF00');break;
+    case 17:drawPixel(x+(-1+offsetX),mouthY,'#FF69B4');drawPixel(x+offsetX,mouthY,'#FF69B4');drawPixel(x+(1+offsetX),mouthY,'#FF69B4');drawPixel(x+(-2+offsetX),mouthY+1,'#FF69B4');drawPixel(x+(2+offsetX),mouthY+1,'#FF69B4');break;
+    case 18:drawPixel(x+(-1+offsetX),mouthY-1,'#FF1744');drawPixel(x+offsetX,mouthY+1,'#FF1744');drawPixel(x+(1+offsetX),mouthY-1,'#FF1744');break;
+    case 19:case 20:case 21:case 22:drawPixel(x+offsetX,mouthY,'#C77B7B');break;
   }
 }
 // Accessory
 function drawAccessory(x,headY,offsetX){
-  const p=state.pixelSize,ac=state.accentColor,da=darkenColor(ac,30),hx=x,hy=headY;
+const ac=state.accentColor,da=darkenColor(ac,30),hx=x,hy=headY;
   const skip=['acc-21','acc-22','acc-24','acc-25','acc-26','acc-27','acc-28'];
   state.accessories.forEach(aid=>{if(skip.includes(aid))return;const ai=parseInt(aid.split('-')[1]);switch(ai){
-    case 1:drawRect(hx-4*p,hy+3*p,3*p,2*p,da);drawRect(hx+p,hy+3*p,3*p,2*p,da);drawPixel(hx-p,hy+3*p,da);drawPixel(hx+p,hy+3*p,da);drawPixel(hx-4*p,hy+4*p,ac);drawPixel(hx+2*p,hy+4*p,ac);break;
-    case 2:drawRect(hx-5*p,hy+3*p,10*p,3*p,da);drawRect(hx-4*p,hy+4*p,3*p,p,ac);drawRect(hx+p,hy+4*p,3*p,p,ac);drawRect(hx-p,hy+4*p,2*p,p,da);break;
-    case 3:drawRect(hx-6*p,hy,1*p,6*p,da);drawRect(hx+5*p,hy,1*p,6*p,da);drawRect(hx-7*p,hy+p,3*p,3*p,ac);drawRect(hx+4*p,hy+p,3*p,3*p,ac);break;
-    case 4:drawRect(hx-4*p,hy-p,8*p,3*p,ac);drawRect(hx-3*p,hy,6*p,2*p,da);drawRect(hx-6*p,hy+p,2*p,p,ac);break;
-    case 5:drawRect(hx-5*p,hy+10*p,10*p,2*p,ac);drawRect(hx+4*p,hy+11*p,2*p,4*p,ac);drawPixel(hx+4*p,hy+15*p,da);drawPixel(hx+5*p,hy+15*p,da);break;
-    case 6:drawPixel(hx-3*p,hy+7*p,da);drawPixel(hx-2*p,hy+8*p,ac);drawPixel(hx+2*p,hy+8*p,ac);drawPixel(hx+3*p,hy+7*p,da);drawPixel(hx,hy+9*p,ac);break;
-    case 7:drawRect(hx+7*p,hy+8*p,3*p,6*p,ac);drawRect(hx+8*p,hy+9*p,p,4*p,da);break;
-    case 8:drawRect(hx+2*p,hy+9*p,2*p,p,ac);drawRect(hx+2*p,hy+10*p,2*p,4*p,da);drawPixel(hx+2*p,hy+14*p,ac);drawPixel(hx+3*p,hy+14*p,ac);break;
-    case 9:drawPixel(hx-5*p,hy+4*p,ac);drawPixel(hx-5*p,hy+5*p,da);drawPixel(hx-5*p,hy+6*p,da);drawPixel(hx+5*p,hy+4*p,ac);drawPixel(hx+5*p,hy+5*p,da);drawPixel(hx+5*p,hy+6*p,da);break;
-    case 10:drawRect(hx-5*p,hy+2*p,10*p,4*p,da);drawRect(hx-4*p,hy+3*p,8*p,2*p,'#87CEEB');drawRect(hx-2*p,hy+3*p,4*p,p,'#FFF');break;
-    case 11:drawRect(hx+p,hy+3*p,4*p,3*p,da);drawRect(hx+2*p,hy+4*p,2*p,p,'#87CEEB');break;
-    case 12:drawRect(hx-4*p,hy-2*p,8*p,3*p,ac);drawRect(hx-5*p,hy,10*p,2*p,ac);break;
-    case 13:drawRect(hx-3*p,hy-3*p,6*p,2*p,'#FFD700');drawRect(hx-4*p,hy-p,8*p,2*p,'#FFD700');break;
-    case 14:drawRect(hx-5*p,hy,10*p,p,ac);drawRect(hx-2*p,hy-p,4*p,2*p,ac);break;
-    case 15:drawRect(hx-4*p,hy-2*p,2*p,2*p,'#FF69B4');drawRect(hx+2*p,hy-2*p,2*p,2*p,'#FF69B4');drawRect(hx-p,hy-p,2*p,2*p,'#FF69B4');drawPixel(hx,hy,'#FF1493');break;
-    case 16:drawRect(hx-5*p,hy-2*p,10*p,6*p,'#808080');drawRect(hx-3*p,hy+p,6*p,2*p,'#333');break;
-    case 17:drawRect(hx-5*p,hy-2*p,10*p,8*p,'#FFF');drawRect(hx-4*p,hy-p,8*p,6*p,'#A9A9A9');drawRect(hx-3*p,hy,6*p,4*p,'#87CEEB');break;
-    case 18:drawRect(hx-5*p,hy-4*p,2*p,4*p,'#FFB6C1');drawRect(hx+3*p,hy-4*p,2*p,4*p,'#FFB6C1');drawRect(hx-4*p,hy,8*p,p,'#FFB6C1');drawPixel(hx-3*p,hy-3*p,'#FF69B4');drawPixel(hx+3*p,hy-3*p,'#FF69B4');break;
-    case 19:drawRect(hx-4*p,hy-6*p,2*p,6*p,'#FFF');drawRect(hx+2*p,hy-6*p,2*p,6*p,'#FFF');drawRect(hx-4*p,hy,8*p,p,'#FFF');break;
-    case 20:drawRect(hx-4*p,hy-p,8*p,6*p,'#FFF');drawRect(hx-3*p,hy+p,2*p,2*p,'#000');drawRect(hx+p,hy+p,2*p,2*p,'#000');break;
+    case 1:drawRect(hx-4,hy+3,3,2,da);drawRect(hx+1,hy+3,3,2,da);drawPixel(hx-1,hy+3,da);drawPixel(hx+1,hy+3,da);drawPixel(hx-4,hy+4,ac);drawPixel(hx+2,hy+4,ac);break;
+    case 2:drawRect(hx-5,hy+3,10,3,da);drawRect(hx-4,hy+4,3,1,ac);drawRect(hx+1,hy+4,3,1,ac);drawRect(hx-1,hy+4,2,1,da);break;
+    case 3:drawRect(hx-6,hy,1,6,da);drawRect(hx+5,hy,1,6,da);drawRect(hx-7,hy+1,3,3,ac);drawRect(hx+4,hy+1,3,3,ac);break;
+    case 4:drawRect(hx-4,hy-1,8,3,ac);drawRect(hx-3,hy,6,2,da);drawRect(hx-6,hy+1,2,1,ac);break;
+    case 5:drawRect(hx-5,hy+10,10,2,ac);drawRect(hx+4,hy+11,2,4,ac);drawPixel(hx+4,hy+15,da);drawPixel(hx+5,hy+15,da);break;
+    case 6:drawPixel(hx-3,hy+7,da);drawPixel(hx-2,hy+8,ac);drawPixel(hx+2,hy+8,ac);drawPixel(hx+3,hy+7,da);drawPixel(hx,hy+9,ac);break;
+    case 7:drawRect(hx+7,hy+8,3,6,ac);drawRect(hx+8,hy+9,1,4,da);break;
+    case 8:drawRect(hx+2,hy+9,2,1,ac);drawRect(hx+2,hy+10,2,4,da);drawPixel(hx+2,hy+14,ac);drawPixel(hx+3,hy+14,ac);break;
+    case 9:drawPixel(hx-5,hy+4,ac);drawPixel(hx-5,hy+5,da);drawPixel(hx-5,hy+6,da);drawPixel(hx+5,hy+4,ac);drawPixel(hx+5,hy+5,da);drawPixel(hx+5,hy+6,da);break;
+    case 10:drawRect(hx-5,hy+2,10,4,da);drawRect(hx-4,hy+3,8,2,'#87CEEB');drawRect(hx-2,hy+3,4,1,'#FFF');break;
+    case 11:drawRect(hx+1,hy+3,4,3,da);drawRect(hx+2,hy+4,2,1,'#87CEEB');break;
+    case 12:drawRect(hx-4,hy-2,8,3,ac);drawRect(hx-5,hy,10,2,ac);break;
+    case 13:drawRect(hx-3,hy-3,6,2,'#FFD700');drawRect(hx-4,hy-1,8,2,'#FFD700');break;
+    case 14:drawRect(hx-5,hy,10,1,ac);drawRect(hx-2,hy-1,4,2,ac);break;
+    case 15:drawRect(hx-4,hy-2,2,2,'#FF69B4');drawRect(hx+2,hy-2,2,2,'#FF69B4');drawRect(hx-1,hy-1,2,2,'#FF69B4');drawPixel(hx,hy,'#FF1493');break;
+    case 16:drawRect(hx-5,hy-2,10,6,'#808080');drawRect(hx-3,hy+1,6,2,'#333');break;
+    case 17:drawRect(hx-5,hy-2,10,8,'#FFF');drawRect(hx-4,hy-1,8,6,'#A9A9A9');drawRect(hx-3,hy,6,4,'#87CEEB');break;
+    case 18:drawRect(hx-5,hy-4,2,4,'#FFB6C1');drawRect(hx+3,hy-4,2,4,'#FFB6C1');drawRect(hx-4,hy,8,1,'#FFB6C1');drawPixel(hx-3,hy-3,'#FF69B4');drawPixel(hx+3,hy-3,'#FF69B4');break;
+    case 19:drawRect(hx-4,hy-6,2,6,'#FFF');drawRect(hx+2,hy-6,2,6,'#FFF');drawRect(hx-4,hy,8,1,'#FFF');break;
+    case 20:drawRect(hx-4,hy-1,8,6,'#FFF');drawRect(hx-3,hy+1,2,2,'#000');drawRect(hx+1,hy+1,2,2,'#000');break;
   }});
 }
 // Wings
 function drawBackWings(x,ox,oy,baseY){
-  const p=state.pixelSize,by=baseY-10*p-4*p;
+const by=baseY-14;
   const bk=['acc-21','acc-22','acc-24','acc-28'];
   if(!state.accessories.some(a=>bk.includes(a)))return;
   state.accessories.forEach(aid=>{if(!bk.includes(aid))return;const ai=parseInt(aid.split('-')[1]);switch(ai){
-    case 21:drawRect(x-12*p+ox,by+oy,6*p,12*p,'#FFF');drawRect(x+6*p+ox,by+oy,6*p,12*p,'#FFF');drawRect(x-13*p+ox,by+p+oy,2*p,9*p,'#F0F0F0');drawRect(x+11*p+ox,by+p+oy,2*p,9*p,'#F0F0F0');break;
-    case 22:drawRect(x-12*p+ox,by+oy,6*p,14*p,'#333');drawRect(x+6*p+ox,by+oy,6*p,14*p,'#333');drawRect(x-12*p+ox,by+2*p+oy,5*p,8*p,'#FF0000');drawRect(x+7*p+ox,by+2*p+oy,5*p,8*p,'#FF0000');break;
-    case 24:drawRect(x-8*p+ox,baseY-10*p+oy,16*p,10*p,'#8B0000');drawRect(x-7*p+ox,baseY-9*p+oy,14*p,8*p,'#A52A2A');break;
-    case 28:drawRect(x-7*p+ox,baseY-13*p+oy,14*p,12*p,'#4B0082');drawRect(x-6*p+ox,baseY-12*p+oy,12*p,10*p,'#6A0DAD');break;
+    case 21:drawRect(x-12+ox,by+oy,6,12,'#FFF');drawRect(x+6+ox,by+oy,6,12,'#FFF');drawRect(x-13+ox,by+oy,2,9,'#F0F0F0');drawRect(x+11+ox,by+oy,2,9,'#F0F0F0');break;
+    case 22:drawRect(x-12+ox,by+oy,6,14,'#333');drawRect(x+6+ox,by+oy,6,14,'#333');drawRect(x-12+ox,by+2+oy,5,8,'#FF0000');drawRect(x+7+ox,by+2+oy,5,8,'#FF0000');break;
+    case 24:drawRect(x-8+ox,baseY-10+oy,16,10,'#8B0000');drawRect(x-7+ox,baseY-9+oy,14,8,'#A52A2A');break;
+    case 28:drawRect(x-7+ox,baseY-13+oy,14,12,'#4B0082');drawRect(x-6+ox,baseY-12+oy,12,10,'#6A0DAD');break;
   }});
 }
 function drawClothing(x,ox,oy,baseY){
-  const p=state.pixelSize,cc=state.clothColor,dc=darkenColor(cc,20),lc=darkenColor(cc,-15),ac=state.accentColor,bodyY=baseY-10*p;
-  drawRect(x-2*p+ox,bodyY-p+oy,4*p,p,state.skinColor);
+const cc=state.clothColor,dc=darkenColor(cc,20),lc=darkenColor(cc,-15),ac=state.accentColor,bodyY=baseY-10;
+  drawRect(x-2+ox,bodyY-1+oy,4,1,state.skinColor);
   switch(state.cloth){
-    case'cloth-0':drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,cc);drawRect(x-5*p+ox,bodyY+p+oy,10*p,6*p,lc);drawRect(x-p+ox,bodyY+oy,2*p,2*p,dc);drawRect(x-5*p+ox,bodyY+6*p+oy,2*p,2*p,cc);drawRect(x+3*p+ox,bodyY+6*p+oy,2*p,2*p,cc);break;
-    case'cloth-1':drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,cc);drawRect(x-4*p+ox,bodyY+oy,8*p,8*p,lc);drawRect(x-p+ox,bodyY+oy,2*p,3*p,'#FFFFFF');drawRect(x-2*p+ox,bodyY+p+oy,p,4*p,dc);drawRect(x+p+ox,bodyY+p+oy,p,4*p,dc);drawRect(x+2*p+ox,bodyY+oy,2*p,8*p,cc);drawPixel(x+3*p+ox,bodyY+p+oy,ac);drawPixel(x+3*p+ox,bodyY+4*p+oy,ac);drawPixel(x+3*p+ox,bodyY+7*p+oy,ac);break;
-    case'cloth-2':drawRect(x-7*p+ox,bodyY-p+oy,14*p,9*p,cc);drawRect(x-6*p+ox,bodyY+oy,12*p,7*p,dc);drawRect(x-3*p+ox,bodyY-2*p+oy,6*p,2*p,cc);drawRect(x-4*p+ox,bodyY-p+oy,8*p,2*p,lc);drawRect(x-2*p+ox,bodyY+4*p+oy,4*p,2*p,dc);break;
-    case'cloth-3':drawRect(x-7*p+ox,bodyY+oy,14*p,8*p,cc);drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,lc);drawRect(x-5*p+ox,bodyY+oy,2*p,8*p,dc);drawRect(x+3*p+ox,bodyY+oy,2*p,8*p,dc);drawRect(x-6*p+ox,bodyY+2*p+oy,2*p,p,ac);drawRect(x-6*p+ox,bodyY+5*p+oy,2*p,p,ac);drawRect(x+4*p+ox,bodyY+2*p+oy,2*p,p,ac);drawRect(x+4*p+ox,bodyY+5*p+oy,2*p,p,ac);drawRect(x-4*p+ox,bodyY+7*p+oy,3*p,p,cc);drawRect(x+p+ox,bodyY+7*p+oy,3*p,p,cc);break;
-    case'cloth-4':drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,cc);drawRect(x-4*p+ox,bodyY+oy,8*p,8*p,lc);drawRect(x-4*p+ox,bodyY+6*p+oy,2*p,2*p,cc);drawRect(x+2*p+ox,bodyY+6*p+oy,2*p,2*p,cc);drawRect(x-2*p+ox,bodyY+p+oy,4*p,2*p,dc);break;
-    case'cloth-5':drawRect(x-5*p+ox,bodyY+oy,10*p,5*p,cc);drawRect(x-6*p+ox,bodyY+5*p+oy,12*p,4*p,cc);drawRect(x-7*p+ox,bodyY+9*p+oy,14*p,2*p,cc);drawRect(x-4*p+ox,bodyY+oy,8*p,4*p,lc);drawPixel(x-p+ox,bodyY+oy,ac);drawPixel(x+p+ox,bodyY+oy,ac);drawRect(x-p+ox,bodyY+4*p+oy,2*p,p,dc);break;
-    case'cloth-6':drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,cc);drawRect(x-5*p+ox,bodyY+oy,2*p,8*p,lc);drawRect(x+3*p+ox,bodyY+oy,2*p,8*p,lc);drawRect(x-3*p+ox,bodyY+oy,6*p,2*p,ac);drawRect(x-p+ox,bodyY+6*p+oy,2*p,2*p,ac);drawRect(x-2*p+ox,bodyY+7*p+oy,4*p,p,dc);break;
-    case'cloth-7':drawRect(x-7*p+ox,bodyY+oy,14*p,8*p,cc);drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,dc);drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#FFFFFF');drawRect(x-4*p+ox,bodyY+p+oy,2*p,3*p,cc);drawRect(x+2*p+ox,bodyY+p+oy,2*p,3*p,cc);drawRect(x+2*p+ox,bodyY+3*p+oy,p,p,ac);drawRect(x+2*p+ox,bodyY+4*p+oy,p,2*p,ac);drawRect(x+2*p+ox,bodyY+6*p+oy,p,p,ac);drawRect(x-5*p+ox,bodyY+6*p+oy,2*p,2*p,dc);break;
-    case'cloth-8':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,cc);drawRect(x-5*p+ox,bodyY+p+oy,10*p,7*p,lc);drawRect(x-5*p+ox,bodyY+2*p+oy,3*p,3*p,dc);drawRect(x+2*p+ox,bodyY+2*p+oy,3*p,3*p,dc);drawRect(x-5*p+ox,bodyY+6*p+oy,3*p,3*p,dc);drawRect(x+2*p+ox,bodyY+6*p+oy,3*p,3*p,dc);drawPixel(x-4*p+ox,bodyY+3*p+oy,ac);drawPixel(x+3*p+ox,bodyY+3*p+oy,ac);break;
-    case'cloth-9':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,cc);drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,lc);drawRect(x-4*p+ox,bodyY+oy,p,9*p,dc);drawRect(x+3*p+ox,bodyY+oy,p,9*p,dc);drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,ac);drawRect(x-p+ox,bodyY+2*p+oy,2*p,4*p,ac);drawPixel(x+p+ox,bodyY+6*p+oy,ac);drawPixel(x+2*p+ox,bodyY+6*p+oy,ac);drawPixel(x+3*p+ox,bodyY+6*p+oy,ac);break;
-    case'cloth-10':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#F8F8FF');drawRect(x-p+ox,bodyY+oy,2*p,9*p,'#DDDDDD');drawRect(x-3*p+ox,bodyY+2*p+oy,2*p,3*p,'#333333');drawRect(x+p+ox,bodyY+2*p+oy,2*p,3*p,'#333333');drawPixel(x-2*p+ox,bodyY+3*p+oy,'#FF0000');drawPixel(x+2*p+ox,bodyY+3*p+oy,'#FF0000');break;
-    case'cloth-11':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#003366');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#004080');drawRect(x-p+ox,bodyY+oy,2*p,9*p,'#002244');drawRect(x-2*p+ox,bodyY+oy,4*p,p,'#FFD700');drawPixel(x+p+ox,bodyY+2*p+oy,'#FFD700');drawRect(x-2*p+ox,bodyY+4*p+oy,4*p,p,'#FFD700');break;
-    case'cloth-12':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FF4500');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#FF6347');drawRect(x-3*p+ox,bodyY+oy,6*p,p,'#FFD700');drawRect(x-p+ox,bodyY+2*p+oy,2*p,6*p,'#8B4513');drawRect(x-2*p+ox,bodyY+7*p+oy,4*p,p,'#8B4513');break;
-    case'cloth-13':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#F8F8FF');drawRect(x-p+ox,bodyY+oy,2*p,9*p,'#DDDDDD');drawPixel(x-2*p+ox,bodyY+2*p+oy,'#000000');drawPixel(x+p+ox,bodyY+2*p+oy,'#000000');drawPixel(x-2*p+ox,bodyY+5*p+oy,'#000000');drawPixel(x+p+ox,bodyY+5*p+oy,'#000000');break;
-    case'cloth-14':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#8B4513');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#A0522D');drawRect(x-p+ox,bodyY+oy,2*p,9*p,'#654321');drawRect(x-3*p+ox,bodyY+2*p+oy,6*p,4*p,'#FFFFFF');drawPixel(x+p+ox,bodyY+3*p+oy,'#333333');drawPixel(x+p+ox,bodyY+4*p+oy,'#333333');break;
-    case'cloth-15':drawRect(x-7*p+ox,bodyY-p+oy,14*p,10*p,'#FFFFFF');drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,'#F0F0F0');drawRect(x-2*p+ox,bodyY+oy,4*p,3*p,'#87CEEB');drawRect(x-3*p+ox,bodyY+3*p+oy,6*p,5*p,'#FF4500');drawPixel(x-p+ox,bodyY+5*p+oy,'#00FF00');drawPixel(x+p+ox,bodyY+5*p+oy,'#FF0000');break;
-    case'cloth-16':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#C0C0C0');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#A9A9A9');drawRect(x-2*p+ox,bodyY+oy,4*p,3*p,'#00BFFF');drawRect(x-3*p+ox,bodyY+4*p+oy,6*p,4*p,'#2F4F4F');drawPixel(x-2*p+ox,bodyY+5*p+oy,'#00FF00');drawPixel(x+ox,bodyY+5*p+oy,'#FFFF00');drawPixel(x+p+ox,bodyY+5*p+oy,'#FF0000');break;
-    case'cloth-17':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#1C1C1C');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#2F2F2F');drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#FF00FF');drawRect(x-3*p+ox,bodyY+3*p+oy,2*p,3*p,'#00FFFF');drawRect(x+p+ox,bodyY+3*p+oy,2*p,3*p,'#00FFFF');drawPixel(x-p+ox,bodyY+6*p+oy,'#FF00FF');drawPixel(x+p+ox,bodyY+6*p+oy,'#00FFFF');break;
-    case'cloth-18':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#808080');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#A9A9A9');drawRect(x-4*p+ox,bodyY+oy,8*p,p,'#DAA520');drawRect(x-2*p+ox,bodyY+oy,4*p,4*p,'#8B0000');drawRect(x-3*p+ox,bodyY+5*p+oy,6*p,3*p,'#696969');drawPixel(x-p+ox,bodyY+2*p+oy,'#FFD700');break;
-    case'cloth-19':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#191970');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#000080');drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#FFFFFF');drawRect(x-3*p+ox,bodyY+2*p+oy,2*p,5*p,'#8B0000');drawRect(x+p+ox,bodyY+2*p+oy,2*p,5*p,'#8B0000');drawPixel(x+ox,bodyY+3*p+oy,'#FFD700');drawPixel(x+ox,bodyY+5*p+oy,'#FFD700');break;
-    case'cloth-20':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FF69B4');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#FFB6C1');drawRect(x-4*p+ox,bodyY+oy,p,9*p,'#FF1493');drawRect(x+3*p+ox,bodyY+oy,p,9*p,'#FF1493');drawRect(x-2*p+ox,bodyY+oy,4*p,p,'#FFD700');drawRect(x-p+ox,bodyY+2*p+oy,2*p,4*p,'#FFD700');drawPixel(x+ox,bodyY+6*p+oy,'#FF0000');break;
-    case'cloth-21':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#DAA520');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#FFD700');drawRect(x-4*p+ox,bodyY+oy,8*p,p,'#8B4513');drawRect(x-3*p+ox,bodyY+3*p+oy,6*p,5*p,'#8B4513');drawRect(x-2*p+ox,bodyY+8*p+oy,4*p,2*p,'#DAA520');drawPixel(x+ox,bodyY+p+oy,'#FF0000');break;
-    case'cloth-22':drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,2*p,8*p,'#FF0000');drawRect(x+3*p+ox,bodyY+oy,2*p,8*p,'#FF0000');drawRect(x-3*p+ox,bodyY+oy,6*p,2*p,'#FF0000');drawPixel(x+ox,bodyY+p+oy,'#0000FF');drawRect(x-2*p+ox,bodyY+6*p+oy,4*p,2*p,'#0000FF');break;
-    case'cloth-23':drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,'#FF4500');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#FF6347');drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#FFFFFF');drawPixel(x-p+ox,bodyY+p+oy,'#000000');drawPixel(x+p+ox,bodyY+p+oy,'#000000');drawRect(x-2*p+ox,bodyY+6*p+oy,4*p,2*p,'#FF4500');break;
-    case'cloth-24':drawRect(x-6*p+ox,bodyY+oy,12*p,5*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,10*p,4*p,'#F8F8FF');drawRect(x-6*p+ox,bodyY+5*p+oy,12*p,3*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+5*p+oy,10*p,2*p,'#F8F8FF');drawPixel(x-2*p+ox,bodyY+2*p+oy,'#000000');drawPixel(x+p+ox,bodyY+2*p+oy,'#000000');break;
-    case'cloth-25':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#228B22');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#32CD32');drawRect(x-4*p+ox,bodyY+oy,p,9*p,'#006400');drawRect(x+3*p+ox,bodyY+oy,p,9*p,'#006400');drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#FFD700');drawPixel(x+ox,bodyY+4*p+oy,'#FFD700');break;
-    case'cloth-26':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#4B0082');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#8A2BE2');drawRect(x-4*p+ox,bodyY-2*p+oy,8*p,2*p,'#4B0082');drawRect(x-3*p+ox,bodyY-p+oy,6*p,2*p,'#8A2BE2');drawPixel(x+ox,bodyY+2*p+oy,'#FFD700');drawPixel(x-p+ox,bodyY+4*p+oy,'#00FFFF');drawPixel(x+p+ox,bodyY+6*p+oy,'#FF00FF');break;
-    case'cloth-27':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#C0C0C0');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#D3D3D3');drawRect(x-4*p+ox,bodyY+oy,8*p,p,'#A9A9A9');drawRect(x-2*p+ox,bodyY+oy,4*p,2*p,'#4169E1');drawRect(x-3*p+ox,bodyY+4*p+oy,6*p,4*p,'#808080');drawPixel(x+ox,bodyY+p+oy,'#FFD700');break;
-    case'cloth-28':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FF69B4');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#FFB6C1');drawRect(x-4*p+ox,bodyY+oy,p,9*p,'#FF1493');drawRect(x+3*p+ox,bodyY+oy,p,9*p,'#FF1493');drawRect(x-2*p+ox,bodyY+oy,4*p,p,'#FFD700');drawRect(x-p+ox,bodyY+2*p+oy,2*p,4*p,'#FFD700');drawPixel(x+ox,bodyY+6*p+oy,'#00FF00');break;
-    case'cloth-29':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#F8F8FF');drawRect(x-p+ox,bodyY+oy,2*p,9*p,'#E0E0E0');drawRect(x-4*p+ox,bodyY+oy,8*p,p,'#FFD700');drawRect(x-3*p+ox,bodyY+3*p+oy,6*p,4*p,'#FFD700');drawPixel(x+ox,bodyY+5*p+oy,'#8B4513');break;
-    case'cloth-30':drawRect(x-5*p+ox,bodyY+oy,10*p,6*p,cc);drawRect(x-4*p+ox,bodyY+oy,8*p,5*p,lc);drawRect(x-4*p+ox,bodyY+oy,2*p,p,cc);drawRect(x+2*p+ox,bodyY+oy,2*p,p,cc);drawRect(x-5*p+ox,bodyY+6*p+oy,10*p,3*p,cc);drawRect(x-7*p+ox,bodyY+p+oy,3*p,3*p,'#FF0000');drawRect(x+4*p+ox,bodyY+p+oy,3*p,3*p,'#FF0000');break;
-    case'cloth-31':drawRect(x-6*p+ox,bodyY+oy,12*p,9*p,'#FFFFFF');drawRect(x-5*p+ox,bodyY+oy,10*p,8*p,'#F5F5F5');drawRect(x-2*p+ox,bodyY+oy,p,3*p,'#FF0000');drawRect(x+p+ox,bodyY+oy,p,3*p,'#FF0000');drawRect(x-3*p+ox,bodyY+3*p+oy,6*p,p,'#FF0000');drawRect(x-6*p+ox,bodyY+p+oy,p,8*p,'#FF0000');drawRect(x+5*p+ox,bodyY+p+oy,p,8*p,'#FF0000');break;
-    case'cloth-32':drawRect(x-7*p+ox,bodyY-p+oy,14*p,10*p,cc);drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,lc);drawRect(x-8*p+ox,bodyY+p+oy,3*p,3*p,dc);drawRect(x+5*p+ox,bodyY+p+oy,3*p,3*p,dc);drawRect(x-2*p+ox,bodyY+3*p+oy,4*p,2*p,ac);drawRect(x-6*p+ox,bodyY+8*p+oy,12*p,3*p,dc);break;
-    default:drawRect(x-6*p+ox,bodyY+oy,12*p,8*p,cc);drawRect(x-5*p+ox,bodyY+p+oy,10*p,6*p,lc);break;
+    case'cloth-0':drawRect(x-6+ox,bodyY+oy,12,8,cc);drawRect(x-5+ox,bodyY+1+oy,10,6,lc);drawRect(x-1+ox,bodyY+oy,2,2,dc);drawRect(x-5+ox,bodyY+6+oy,2,2,cc);drawRect(x+3+ox,bodyY+6+oy,2,2,cc);break;
+    case'cloth-1':drawRect(x-6+ox,bodyY+oy,12,8,cc);drawRect(x-4+ox,bodyY+oy,8,8,lc);drawRect(x-1+ox,bodyY+oy,2,3,'#FFFFFF');drawRect(x-2+ox,bodyY+1+oy,1,4,dc);drawRect(x+1+ox,bodyY+1+oy,1,4,dc);drawRect(x+2+ox,bodyY+oy,2,8,cc);drawPixel(x+3+ox,bodyY+1+oy,ac);drawPixel(x+3+ox,bodyY+4+oy,ac);drawPixel(x+3+ox,bodyY+7+oy,ac);break;
+    case'cloth-2':drawRect(x-7+ox,bodyY-1+oy,14,9,cc);drawRect(x-6+ox,bodyY+oy,12,7,dc);drawRect(x-3+ox,bodyY-2+oy,6,2,cc);drawRect(x-4+ox,bodyY-1+oy,8,2,lc);drawRect(x-2+ox,bodyY+4+oy,4,2,dc);break;
+    case'cloth-3':drawRect(x-7+ox,bodyY+oy,14,8,cc);drawRect(x-6+ox,bodyY+oy,12,8,lc);drawRect(x-5+ox,bodyY+oy,2,8,dc);drawRect(x+3+ox,bodyY+oy,2,8,dc);drawRect(x-6+ox,bodyY+2+oy,2,1,ac);drawRect(x-6+ox,bodyY+5+oy,2,1,ac);drawRect(x+4+ox,bodyY+2+oy,2,1,ac);drawRect(x+4+ox,bodyY+5+oy,2,1,ac);drawRect(x-4+ox,bodyY+7+oy,3,1,cc);drawRect(x+1+ox,bodyY+7+oy,3,1,cc);break;
+    case'cloth-4':drawRect(x-5+ox,bodyY+oy,10,8,cc);drawRect(x-4+ox,bodyY+oy,8,8,lc);drawRect(x-4+ox,bodyY+6+oy,2,2,cc);drawRect(x+2+ox,bodyY+6+oy,2,2,cc);drawRect(x-2+ox,bodyY+1+oy,4,2,dc);break;
+    case'cloth-5':drawRect(x-5+ox,bodyY+oy,10,5,cc);drawRect(x-6+ox,bodyY+5+oy,12,4,cc);drawRect(x-7+ox,bodyY+9+oy,14,2,cc);drawRect(x-4+ox,bodyY+oy,8,4,lc);drawPixel(x-1+ox,bodyY+oy,ac);drawPixel(x+1+ox,bodyY+oy,ac);drawRect(x-1+ox,bodyY+4+oy,2,1,dc);break;
+    case'cloth-6':drawRect(x-6+ox,bodyY+oy,12,8,cc);drawRect(x-5+ox,bodyY+oy,2,8,lc);drawRect(x+3+ox,bodyY+oy,2,8,lc);drawRect(x-3+ox,bodyY+oy,6,2,ac);drawRect(x-1+ox,bodyY+6+oy,2,2,ac);drawRect(x-2+ox,bodyY+7+oy,4,1,dc);break;
+    case'cloth-7':drawRect(x-7+ox,bodyY+oy,14,8,cc);drawRect(x-6+ox,bodyY+oy,12,8,dc);drawRect(x-2+ox,bodyY+oy,4,2,'#FFFFFF');drawRect(x-4+ox,bodyY+1+oy,2,3,cc);drawRect(x+2+ox,bodyY+1+oy,2,3,cc);drawRect(x+2+ox,bodyY+3+oy,1,1,ac);drawRect(x+2+ox,bodyY+4+oy,1,2,ac);drawRect(x+2+ox,bodyY+6+oy,1,1,ac);drawRect(x-5+ox,bodyY+6+oy,2,2,dc);break;
+    case'cloth-8':drawRect(x-6+ox,bodyY+oy,12,9,cc);drawRect(x-5+ox,bodyY+1+oy,10,7,lc);drawRect(x-5+ox,bodyY+2+oy,3,3,dc);drawRect(x+2+ox,bodyY+2+oy,3,3,dc);drawRect(x-5+ox,bodyY+6+oy,3,3,dc);drawRect(x+2+ox,bodyY+6+oy,3,3,dc);drawPixel(x-4+ox,bodyY+3+oy,ac);drawPixel(x+3+ox,bodyY+3+oy,ac);break;
+    case'cloth-9':drawRect(x-6+ox,bodyY+oy,12,9,cc);drawRect(x-5+ox,bodyY+oy,10,8,lc);drawRect(x-4+ox,bodyY+oy,1,9,dc);drawRect(x+3+ox,bodyY+oy,1,9,dc);drawRect(x-2+ox,bodyY+oy,4,2,ac);drawRect(x-1+ox,bodyY+2+oy,2,4,ac);drawPixel(x+1+ox,bodyY+6+oy,ac);drawPixel(x+2+ox,bodyY+6+oy,ac);drawPixel(x+3+ox,bodyY+6+oy,ac);break;
+    case'cloth-10':drawRect(x-6+ox,bodyY+oy,12,9,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,10,8,'#F8F8FF');drawRect(x-1+ox,bodyY+oy,2,9,'#DDDDDD');drawRect(x-3+ox,bodyY+2+oy,2,3,'#333333');drawRect(x+1+ox,bodyY+2+oy,2,3,'#333333');drawPixel(x-2+ox,bodyY+3+oy,'#FF0000');drawPixel(x+2+ox,bodyY+3+oy,'#FF0000');break;
+    case'cloth-11':drawRect(x-6+ox,bodyY+oy,12,9,'#003366');drawRect(x-5+ox,bodyY+oy,10,8,'#004080');drawRect(x-1+ox,bodyY+oy,2,9,'#002244');drawRect(x-2+ox,bodyY+oy,4,1,'#FFD700');drawPixel(x+1+ox,bodyY+2+oy,'#FFD700');drawRect(x-2+ox,bodyY+4+oy,4,1,'#FFD700');break;
+    case'cloth-12':drawRect(x-6+ox,bodyY+oy,12,9,'#FF4500');drawRect(x-5+ox,bodyY+oy,10,8,'#FF6347');drawRect(x-3+ox,bodyY+oy,6,1,'#FFD700');drawRect(x-1+ox,bodyY+2+oy,2,6,'#8B4513');drawRect(x-2+ox,bodyY+7+oy,4,1,'#8B4513');break;
+    case'cloth-13':drawRect(x-6+ox,bodyY+oy,12,9,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,10,8,'#F8F8FF');drawRect(x-1+ox,bodyY+oy,2,9,'#DDDDDD');drawPixel(x-2+ox,bodyY+2+oy,'#000000');drawPixel(x+1+ox,bodyY+2+oy,'#000000');drawPixel(x-2+ox,bodyY+5+oy,'#000000');drawPixel(x+1+ox,bodyY+5+oy,'#000000');break;
+    case'cloth-14':drawRect(x-6+ox,bodyY+oy,12,9,'#8B4513');drawRect(x-5+ox,bodyY+oy,10,8,'#A0522D');drawRect(x-1+ox,bodyY+oy,2,9,'#654321');drawRect(x-3+ox,bodyY+2+oy,6,4,'#FFFFFF');drawPixel(x+1+ox,bodyY+3+oy,'#333333');drawPixel(x+1+ox,bodyY+4+oy,'#333333');break;
+    case'cloth-15':drawRect(x-7+ox,bodyY-1+oy,14,10,'#FFFFFF');drawRect(x-6+ox,bodyY+oy,12,8,'#F0F0F0');drawRect(x-2+ox,bodyY+oy,4,3,'#87CEEB');drawRect(x-3+ox,bodyY+3+oy,6,5,'#FF4500');drawPixel(x-1+ox,bodyY+5+oy,'#00FF00');drawPixel(x+1+ox,bodyY+5+oy,'#FF0000');break;
+    case'cloth-16':drawRect(x-6+ox,bodyY+oy,12,9,'#C0C0C0');drawRect(x-5+ox,bodyY+oy,10,8,'#A9A9A9');drawRect(x-2+ox,bodyY+oy,4,3,'#00BFFF');drawRect(x-3+ox,bodyY+4+oy,6,4,'#2F4F4F');drawPixel(x-2+ox,bodyY+5+oy,'#00FF00');drawPixel(x+ox,bodyY+5+oy,'#FFFF00');drawPixel(x+1+ox,bodyY+5+oy,'#FF0000');break;
+    case'cloth-17':drawRect(x-6+ox,bodyY+oy,12,9,'#1C1C1C');drawRect(x-5+ox,bodyY+oy,10,8,'#2F2F2F');drawRect(x-2+ox,bodyY+oy,4,2,'#FF00FF');drawRect(x-3+ox,bodyY+3+oy,2,3,'#00FFFF');drawRect(x+1+ox,bodyY+3+oy,2,3,'#00FFFF');drawPixel(x-1+ox,bodyY+6+oy,'#FF00FF');drawPixel(x+1+ox,bodyY+6+oy,'#00FFFF');break;
+    case'cloth-18':drawRect(x-6+ox,bodyY+oy,12,9,'#808080');drawRect(x-5+ox,bodyY+oy,10,8,'#A9A9A9');drawRect(x-4+ox,bodyY+oy,8,1,'#DAA520');drawRect(x-2+ox,bodyY+oy,4,4,'#8B0000');drawRect(x-3+ox,bodyY+5+oy,6,3,'#696969');drawPixel(x-1+ox,bodyY+2+oy,'#FFD700');break;
+    case'cloth-19':drawRect(x-6+ox,bodyY+oy,12,9,'#191970');drawRect(x-5+ox,bodyY+oy,10,8,'#000080');drawRect(x-2+ox,bodyY+oy,4,2,'#FFFFFF');drawRect(x-3+ox,bodyY+2+oy,2,5,'#8B0000');drawRect(x+1+ox,bodyY+2+oy,2,5,'#8B0000');drawPixel(x+ox,bodyY+3+oy,'#FFD700');drawPixel(x+ox,bodyY+5+oy,'#FFD700');break;
+    case'cloth-20':drawRect(x-6+ox,bodyY+oy,12,9,'#FF69B4');drawRect(x-5+ox,bodyY+oy,10,8,'#FFB6C1');drawRect(x-4+ox,bodyY+oy,1,9,'#FF1493');drawRect(x+3+ox,bodyY+oy,1,9,'#FF1493');drawRect(x-2+ox,bodyY+oy,4,1,'#FFD700');drawRect(x-1+ox,bodyY+2+oy,2,4,'#FFD700');drawPixel(x+ox,bodyY+6+oy,'#FF0000');break;
+    case'cloth-21':drawRect(x-6+ox,bodyY+oy,12,9,'#DAA520');drawRect(x-5+ox,bodyY+oy,10,8,'#FFD700');drawRect(x-4+ox,bodyY+oy,8,1,'#8B4513');drawRect(x-3+ox,bodyY+3+oy,6,5,'#8B4513');drawRect(x-2+ox,bodyY+8+oy,4,2,'#DAA520');drawPixel(x+ox,bodyY+1+oy,'#FF0000');break;
+    case'cloth-22':drawRect(x-6+ox,bodyY+oy,12,8,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,2,8,'#FF0000');drawRect(x+3+ox,bodyY+oy,2,8,'#FF0000');drawRect(x-3+ox,bodyY+oy,6,2,'#FF0000');drawPixel(x+ox,bodyY+1+oy,'#0000FF');drawRect(x-2+ox,bodyY+6+oy,4,2,'#0000FF');break;
+    case'cloth-23':drawRect(x-6+ox,bodyY+oy,12,8,'#FF4500');drawRect(x-5+ox,bodyY+oy,10,8,'#FF6347');drawRect(x-2+ox,bodyY+oy,4,2,'#FFFFFF');drawPixel(x-1+ox,bodyY+1+oy,'#000000');drawPixel(x+1+ox,bodyY+1+oy,'#000000');drawRect(x-2+ox,bodyY+6+oy,4,2,'#FF4500');break;
+    case'cloth-24':drawRect(x-6+ox,bodyY+oy,12,5,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,10,4,'#F8F8FF');drawRect(x-6+ox,bodyY+5+oy,12,3,'#FFFFFF');drawRect(x-5+ox,bodyY+5+oy,10,2,'#F8F8FF');drawPixel(x-2+ox,bodyY+2+oy,'#000000');drawPixel(x+1+ox,bodyY+2+oy,'#000000');break;
+    case'cloth-25':drawRect(x-6+ox,bodyY+oy,12,9,'#228B22');drawRect(x-5+ox,bodyY+oy,10,8,'#32CD32');drawRect(x-4+ox,bodyY+oy,1,9,'#006400');drawRect(x+3+ox,bodyY+oy,1,9,'#006400');drawRect(x-2+ox,bodyY+oy,4,2,'#FFD700');drawPixel(x+ox,bodyY+4+oy,'#FFD700');break;
+    case'cloth-26':drawRect(x-6+ox,bodyY+oy,12,9,'#4B0082');drawRect(x-5+ox,bodyY+oy,10,8,'#8A2BE2');drawRect(x-4+ox,bodyY-2+oy,8,2,'#4B0082');drawRect(x-3+ox,bodyY-1+oy,6,2,'#8A2BE2');drawPixel(x+ox,bodyY+2+oy,'#FFD700');drawPixel(x-1+ox,bodyY+4+oy,'#00FFFF');drawPixel(x+1+ox,bodyY+6+oy,'#FF00FF');break;
+    case'cloth-27':drawRect(x-6+ox,bodyY+oy,12,9,'#C0C0C0');drawRect(x-5+ox,bodyY+oy,10,8,'#D3D3D3');drawRect(x-4+ox,bodyY+oy,8,1,'#A9A9A9');drawRect(x-2+ox,bodyY+oy,4,2,'#4169E1');drawRect(x-3+ox,bodyY+4+oy,6,4,'#808080');drawPixel(x+ox,bodyY+1+oy,'#FFD700');break;
+    case'cloth-28':drawRect(x-6+ox,bodyY+oy,12,9,'#FF69B4');drawRect(x-5+ox,bodyY+oy,10,8,'#FFB6C1');drawRect(x-4+ox,bodyY+oy,1,9,'#FF1493');drawRect(x+3+ox,bodyY+oy,1,9,'#FF1493');drawRect(x-2+ox,bodyY+oy,4,1,'#FFD700');drawRect(x-1+ox,bodyY+2+oy,2,4,'#FFD700');drawPixel(x+ox,bodyY+6+oy,'#00FF00');break;
+    case'cloth-29':drawRect(x-6+ox,bodyY+oy,12,9,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,10,8,'#F8F8FF');drawRect(x-1+ox,bodyY+oy,2,9,'#E0E0E0');drawRect(x-4+ox,bodyY+oy,8,1,'#FFD700');drawRect(x-3+ox,bodyY+3+oy,6,4,'#FFD700');drawPixel(x+ox,bodyY+5+oy,'#8B4513');break;
+    case'cloth-30':drawRect(x-5+ox,bodyY+oy,10,6,cc);drawRect(x-4+ox,bodyY+oy,8,5,lc);drawRect(x-4+ox,bodyY+oy,2,1,cc);drawRect(x+2+ox,bodyY+oy,2,1,cc);drawRect(x-5+ox,bodyY+6+oy,10,3,cc);drawRect(x-7+ox,bodyY+1+oy,3,3,'#FF0000');drawRect(x+4+ox,bodyY+1+oy,3,3,'#FF0000');break;
+    case'cloth-31':drawRect(x-6+ox,bodyY+oy,12,9,'#FFFFFF');drawRect(x-5+ox,bodyY+oy,10,8,'#F5F5F5');drawRect(x-2+ox,bodyY+oy,1,3,'#FF0000');drawRect(x+1+ox,bodyY+oy,1,3,'#FF0000');drawRect(x-3+ox,bodyY+3+oy,6,1,'#FF0000');drawRect(x-6+ox,bodyY+1+oy,1,8,'#FF0000');drawRect(x+5+ox,bodyY+1+oy,1,8,'#FF0000');break;
+    case'cloth-32':drawRect(x-7+ox,bodyY-1+oy,14,10,cc);drawRect(x-6+ox,bodyY+oy,12,8,lc);drawRect(x-8+ox,bodyY+1+oy,3,3,dc);drawRect(x+5+ox,bodyY+1+oy,3,3,dc);drawRect(x-2+ox,bodyY+3+oy,4,2,ac);drawRect(x-6+ox,bodyY+8+oy,12,3,dc);break;
+    default:drawRect(x-6+ox,bodyY+oy,12,8,cc);drawRect(x-5+ox,bodyY+1+oy,10,6,lc);break;
   }
 }
 function drawAnimatedLimbs(x,ox,oy,armL,armR,legL,legR,baseY){
-  const p=state.pixelSize,sc=state.skinColor,bc=state.clothColor;
+  const sc=state.skinColor,bc=state.clothColor;
   const lby=baseY+oy;
-  const llx=x-3*p+ox+Math.round(legL*0.5),llY=lby-Math.abs(Math.round(legL*0.3));
-  drawRect(llx,llY,2*p,5*p,sc);drawRect(llx,llY+4*p,2*p,p,darkenColor(sc,20));
-  const rlx=x+p+ox+Math.round(legR*0.5),rlY=lby-Math.abs(Math.round(legR*0.3));
-  drawRect(rlx,rlY,2*p,5*p,sc);drawRect(rlx,rlY+4*p,2*p,p,darkenColor(sc,20));
-  const aby=baseY-8*p+oy;
-  const alx=x-6*p+ox+Math.round(armL),aly=aby-Math.round(Math.abs(armL)*0.2);
-  drawRect(alx-p,aly,2*p,3*p,bc);const elL=armL>0?p:(armL<0?-p:0);
-  drawRect(alx+elL,aly+3*p,2*p,3*p,sc);drawRect(alx+elL*2,aly+5*p,2*p,2*p,sc);
-  const arx=x+4*p+ox+Math.round(armR),ary=aby-Math.round(Math.abs(armR)*0.2);
-  drawRect(arx+Math.round(armR),ary,2*p,3*p,bc);const elR=armR>0?p:(armR<0?-p:0);
-  drawRect(arx+Math.round(armR)+elR,ary+3*p,2*p,3*p,sc);drawRect(arx+Math.round(armR)+elR*2,ary+5*p,2*p,2*p,sc);
+  const llx=x-3+ox+Math.round(legL*0.5),llY=lby-Math.abs(Math.round(legL*0.3));
+  drawRect(llx,llY,2,5,sc);drawRect(llx,llY+4,2,1,darkenColor(sc,20));
+  const rlx=x+1+ox+Math.round(legR*0.5),rlY=lby-Math.abs(Math.round(legR*0.3));
+  drawRect(rlx,rlY,2,5,sc);drawRect(rlx,rlY+4,2,1,darkenColor(sc,20));
+  const aby=baseY-8+oy;
+  const alx=x-6+ox+Math.round(armL),aly=aby-Math.round(Math.abs(armL)*0.2);
+  drawRect(alx-1,aly,2,3,bc);const elL=armL>0?1:(armL<0?-1:0);
+  drawRect(alx+elL,aly+3,2,3,sc);drawRect(alx+elL*2,aly+5,2,2,sc);
+  const arx=x+4+ox+Math.round(armR),ary=aby-Math.round(Math.abs(armR)*0.2);
+  drawRect(arx+Math.round(armR),ary,2,3,bc);const elR=armR>0?1:(armR<0?-1:0);
+  drawRect(arx+Math.round(armR)+elR,ary+3,2,3,sc);drawRect(arx+Math.round(armR)+elR*2,ary+5,2,2,sc);
 }
 function drawHandheldItems(x,armR,ox,oy,baseY){
-  const p=state.pixelSize,hd=['acc-25','acc-26','acc-27'];
+  const hd=['acc-25','acc-26','acc-27'];
   if(!state.accessories.some(a=>hd.includes(a)))return;
-  const arx=x+4*p+ox+Math.round(armR),ary=baseY-8*p+oy-Math.round(Math.abs(armR)*0.2)+5*p;
+  const arx=x+4+ox+Math.round(armR),ary=baseY-8+oy-Math.round(Math.abs(armR)*0.2)+5;
   state.accessories.forEach(aid=>{if(!hd.includes(aid))return;const ai=parseInt(aid.split('-')[1]);switch(ai){
-    case 25:drawRect(arx+p,ary-8*p,2*p,12*p,'#8B4513');drawPixel(arx,ary-10*p,'#FFD700');drawPixel(arx+2*p,ary-10*p,'#FFD700');break;
-    case 26:drawRect(arx+2*p,ary-18*p,2*p,20*p,'#8B4513');drawRect(arx,ary-16*p,6*p,2*p,'#FF69B4');break;
-    case 27:drawRect(arx+p,ary-16*p,2*p,18*p,'#8B4513');drawRect(arx-6*p,ary-14*p,16*p,2*p,'#FF0000');break;
+    case 25:drawRect(arx+1,ary-8,2,12,'#8B4513');drawPixel(arx,ary-10,'#FFD700');drawPixel(arx+2,ary-10,'#FFD700');break;
+    case 26:drawRect(arx+2,ary-18,2,20,'#8B4513');drawRect(arx,ary-16,6,2,'#FF69B4');break;
+    case 27:drawRect(arx+1,ary-16,2,18,'#8B4513');drawRect(arx-6,ary-14,16,2,'#FF0000');break;
   }});
 }
 // Background
@@ -723,17 +719,16 @@ function render(){
     gridOffY=Math.round(canvas.height/p/2-g/2);
   }
   const offset=Math.floor(g/2)+gridOffX;
-  const offsetPx=offset*p;
-  const baseYPx=(g===64?52:(g===16?26:30))*p+gridOffY*p;
+  const baseY=(g===64?52:(g===16?26:30))+gridOffY;
   drawBackground(gridOffX,gridOffY);
   computeAnimation(state.frame,state.animSpeed||1);
-  const aXp=Math.round(aX)*p,aYp=Math.round(aY)*p;
-  drawBackWings(offsetPx,aXp,aYp,baseYPx);
-  drawClothing(offsetPx,aXp,aYp,baseYPx);
-  drawAnimatedLimbs(offsetPx,aXp,aYp,aL,aR,lL,lR,baseYPx);
-  drawHandheldItems(offsetPx,aR,aXp,aYp,baseYPx);
-  const hs=8,hY=baseYPx-20*p+aYp+Math.round(hBob*0.3)*p,hX=offsetPx+Math.round(hSway*0.3)*p;
-  for(let dy=0;dy<hs;dy++)for(let dx=0;dx<hs;dx++){const ed=Math.max(Math.abs(dx-hs/2+0.5),Math.abs(dy-hs/2+0.5));if(ed<hs/2)drawPixel(hX-hs/2*p+dx*p,hY+dy*p,state.skinColor);}
+  const ox=Math.round(aX),oy=Math.round(aY);
+  drawBackWings(offset,ox,oy,baseY);
+  drawClothing(offset,ox,oy,baseY);
+  drawAnimatedLimbs(offset,ox,oy,aL,aR,lL,lR,baseY);
+  drawHandheldItems(offset,aR,ox,oy,baseY);
+  const hs=8,bodyY=baseY+oy,hY=bodyY-20+Math.round(hBob*0.3),hX=offset+ox+Math.round(hSway*0.3);
+  for(let dy=0;dy<hs;dy++)for(let dx=0;dx<hs;dx++){const ed=Math.max(Math.abs(dx-hs/2+0.5),Math.abs(dy-hs/2+0.5));if(ed<hs/2)drawPixel(hX-hs/2+dx,hY+dy,state.skinColor);}
   if(state.hair!=='hair-0')drawHair(hX,hY,0);
   drawFace(hX,hY,0);
   drawAccessory(hX,hY,0);
@@ -885,8 +880,8 @@ function loadPanelContent(name,container){switch(name){
   case'animation':container.innerHTML=`<div class="panel-section"><div class="panel-section-title">\u57FA\u7840\u52A8\u753B</div><div class="anim-grid" id="mBaseAnim"></div></div><div class="panel-section"><div class="panel-section-title">\u82B1\u751F\u821E\u8E22</div><div class="anim-grid" id="mDanceAnim"></div></div><div class="panel-section"><div class="panel-section-title">\u7279\u8272\u52A8\u4F5C</div><div class="anim-grid" id="mSpecialAnim"></div></div>`;buildAnimGrid('mBaseAnim',['none','breath','blink','bounce'],container);buildAnimGrid('mDanceAnim',['peanuts-sway','peanuts-clap','peanuts-kick','peanuts-stomp','peanuts-bow','peanuts-slide','peanuts-turn','peanuts-wave','peanuts-disco','peanuts-snoopy','peanuts-linucy'],container);buildAnimGrid('mSpecialAnim',['robot-dance','hiphop-dance','shy-action','excited-jump','boxing-combo','spin-jump','rock-gesture','float-fly','bunny-hop','spin-in-place','conductor','squat-stand','pantomime'],container);break;
   case'scene':container.innerHTML=`<div class="module-grid" id="mSceneGrid"></div>`;const sceneEmojis=['&#x1F333','&#x1F30B','&#x1F332','&#x26F7','&#x1F3DC','&#x1F33F','&#x1F309','&#x1F3AA','&#x1F3CA','&#x1F3EB','&#x26E9','&#x1F680'];MODULE_LIBRARY.scenes.forEach((s,i)=>{const c=document.createElement('div');c.className='module-card'+(state.scene===s.id?' selected':'');c.innerHTML=`<div class="module-icon">${sceneEmojis[i]||'&#x1F3D7;'}</div><div>${s.name}</div>`;c.onclick=()=>{state.scene=s.id;render();loadPanelContent('scene',container);};container.querySelector('#mSceneGrid').appendChild(c);});break;
 }}
-function buildColorGrid(id,colors,key){const el=document.getElementById(id);colors.forEach(c=>{const s=document.createElement('div');s.className='color-swatch'+(state[key]===c?' selected':'');s.style.background=c;s.onclick=()=>{state[key]=c;render();buildColorGrid(id,colors,key);};el.appendChild(s);});}
-function buildAnimGrid(id,anims,container){const el=container.querySelector('#'+id);anims.forEach(a=>{const c=document.createElement('div');c.className='anim-card'+(state.animation===a?' selected':'');c.textContent=ANIMATION_NAMES[a]||a;c.onclick=()=>{state.animation=a;state.frame=0;if(a==='none'){state.animating=false;stopAnim();}else{state.animating=true;startAnim();}render();buildAnimGrid(id,anims,container);};el.appendChild(c);});}
+function buildColorGrid(id,colors,key){const el=document.getElementById(id);el.innerHTML='';colors.forEach(c=>{const s=document.createElement('div');s.className='color-swatch'+(state[key]===c?' selected':'');s.style.background=c;s.onclick=()=>{state[key]=c;render();buildColorGrid(id,colors,key);};el.appendChild(s);});}
+function buildAnimGrid(id,anims,container){const el=container.querySelector('#'+id);el.innerHTML='';anims.forEach(a=>{const c=document.createElement('div');c.className='anim-card'+(state.animation===a?' selected':'');c.textContent=ANIMATION_NAMES[a]||a;c.onclick=()=>{state.animation=a;state.frame=0;if(a==='none'){state.animating=false;stopAnim();}else{state.animating=true;startAnim();}render();buildAnimGrid(id,anims,container);};el.appendChild(c);});}
 // Export / Fav
 function toggleExport(){document.getElementById('export-modal').classList.toggle('open');document.getElementById('fav-modal').classList.remove('open');}
 function toggleFavorites(){const m=document.getElementById('fav-modal');m.classList.toggle('open');document.getElementById('export-modal').classList.remove('open');loadFavorites();}
